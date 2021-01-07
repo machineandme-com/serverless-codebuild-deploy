@@ -1,0 +1,24 @@
+version: 0.2
+
+env:
+  variables:
+    STAGE: "test"
+
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - export PATH=/home/node/.npm-global/bin:$PATH
+      - npm config set unsafe-perm true
+      - npm install --unsafe-perms  -g tslint serverless yarn serverless-domain-manager serverless-plugin-log-retention  serverless-prune-plugin
+  pre_build:
+    commands:
+      - yarn install --unsafe-perms
+      - yarn build
+      - yarn install --production=true
+
+  post_build:
+    commands:
+      - sls deploy -v --stage=$STAGE
